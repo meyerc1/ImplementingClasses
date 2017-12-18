@@ -10,17 +10,17 @@ import math
 
 def main():
     """ Calls the   TEST   functions in this module. """
-    run_test_init()
-    run_test_repr()
-    run_test_clone()
-    run_test_move_to()
-    run_test_move_by()
-    ##run_test_get_number_of_moves_made()
-    run_test_get_distance_from()
-    run_test_get_distance_from_start()
+    #run_test_init()
+    #run_test_repr()
+    #run_test_clone()
+    #run_test_move_to()
+    #run_test_move_by()
+    #run_test_get_number_of_moves_made()
+    #run_test_get_distance_from()
+    #run_test_get_distance_from_start()
     run_test_get_distance_traveled()
-    run_test_closer_to()
-    run_test_halfway_to()
+    #run_test_closer_to()
+    #run_test_halfway_to()
 
 ########################################################################
 # IMPORTANT:
@@ -44,15 +44,20 @@ def main():
 # NOTE: For ALL of the methods that you implement, the method is allowed
 # to have additional side effects as needed by it and/or other methods.
 ########################################################################
+
+
 class Point(object):
     """ Represents a 2D point in x y space. """
-
-
 
     def __init__(self, x, y):
         """ Constructs a new Point located at the given x y. """
         self.x = x
         self.y = y
+        self.count = 0
+        self.distance = 0
+        start = self
+        self.startx = x
+        self.starty = y
 
     def __repr__(self):
         """ Returns a string that represents the point. """
@@ -63,44 +68,84 @@ class Point(object):
         """ Creates and returns a new Point at the same x y as self."""
         return Point(self.x, self.y)
 
-
-
     def move_to(self, x, y):
         """ Moves this point to the new x y location. """
+        self.distance = self.distance + self.get_distance_from(Point(x, y))
         self.x = x
         #make 'x' parameter usable by Point
 
         self.y = y
         #make 'y' parameter usable by Point
 
-        #if(self.x == int, self.y == int):
-            #count = count + 1
+
+        self.count = self.count + 1
         #count moves made for number of moves made
 
         return Point(self.x, self.y)
 
     def move_by(self, dx, dy):
-        count = 0
+        self.distance = self.distance + self.get_distance_from(Point(self.x + dx,self.y + dy))
+
         self.x = self.x + dx
         #reassign what 'x' is equal to after moving by given dx
 
         self.y = self.y + dy
         #reassign what 'y' is equal to after moving by given dy
 
-        if(self.x == int, self.y == int):
-            count = count + 1
+
+        self.count = self.count + 1
         #count moves made for number of moves made
 
         return self.x, self.y
 
     def get_number_of_moves_made(self):
-        return
+        return self.count
 
     def get_distance_from(self, point):
         a = self.x - point.x
         b = self.y - point.y
         c = math.sqrt((a ** 2) + (b ** 2))
+
         return c
+
+    def get_distance_from_start(self):
+        a = self.startx - self.x
+        b = self.starty - self.y
+        c = math.sqrt((a ** 2) + (b ** 2))
+
+        return c
+
+    def get_distance_traveled(self):
+
+        return self.distance
+
+
+    def closer_to(self, point1, point2):
+
+        a1 = self.x - point1.x
+        b1 = self.y - point1.y
+        c1 = math.sqrt((a1 ** 2) + (b1 ** 2))
+
+        a2 = self.x - point2.x
+        b2 = self.y - point2.y
+        c2 = math.sqrt((a2 ** 2) + (b2 ** 2))
+
+        if c1 < c2:
+            return point1
+
+        if c2 < c1:
+            return point2
+
+        if c2 == c1:
+            return point1
+
+    def halfway_to(self, point1):
+        new_x = ((point1.x + self.x)/2)
+        new_y = ((point1.y + self.y)/2)
+        new_point = Point(new_x, new_y)
+
+        return new_point
+
 
 def run_test_init():
     """
@@ -906,7 +951,7 @@ def run_test_get_distance_traveled():
         print('Actual:', p4.get_distance_traveled())
     """
     # ------------------------------------------------------------------
-    # TODO: 11.  Follow the same instructions as in TODO 3 above,
+    # DONE: 11.  Follow the same instructions as in DONE 3 above,
     #    but for the  get_distance_traveled  method specified above.
     # ------------------------------------------------------------------
     print()
@@ -915,6 +960,33 @@ def run_test_get_distance_traveled():
     print('of the Point class.')
     print('-----------------------------------------------------------')
 
+    p1 = Point(20, 30)
+    p1.move_to(21, 30)
+    p1.move_to(21, 38)
+    print()
+    print('Expected p1 has traveled 9.0')
+    print('Actual:', p1.get_distance_traveled())
+
+    p1.move_by(1, 1)
+    print()
+    print('Expected p1 has now traveled about 10.414')
+    print('Actual:', p1.get_distance_traveled())
+
+    p2 = Point(0, 0)
+    p3 = Point(100, 22)
+    p4 = Point(0, 555)
+    for k in range(100):
+        p2.move_by(0, k + 1)
+        p3.move_by(k + 1, 0)
+        p4.move_to(k + 1, 555)
+
+    print()
+    print('Expected p2 has now traveled', 101 * 50.0)
+    print('Actual:', p2.get_distance_traveled())
+    print('Expected p3 has now traveled', 101 * 50.0)
+    print('Actual:', p3.get_distance_traveled())
+    print('Expected p4 has now traveled 100.0')
+    print('Actual:', p4.get_distance_traveled())
 
 def run_test_closer_to():
     """
@@ -963,13 +1035,41 @@ def run_test_closer_to():
         print('Actual:  ', p1.closer_to(p4, p5) is p5)
     """
     # ------------------------------------------------------------------
-    # TODO: 12.  Follow the same instructions as in TODO 3 above,
+    # DONE: 12.  Follow the same instructions as in DONE 3 above,
     #    but for the  closer_to  method specified above.
     # ------------------------------------------------------------------
     print()
     print('-----------------------------------------------------------')
     print('Testing the   closer_to   method of the Point class.')
     print('-----------------------------------------------------------')
+
+    p1 = Point(10, 20)
+    p2 = Point(15, 20)
+    p3 = Point(14, 24)
+
+    print()
+    print('Expected:', p2)
+    print('Actual:  ', p1.closer_to(p2, p3))
+    print('Expected:', p2)
+    print('Actual:  ', p1.closer_to(p3, p2))
+
+    print()
+    print('Expected:', p1)
+    print('Actual:  ', p1.closer_to(p1, p3))
+    print('Expected:', p2)
+    print('Actual:  ', p2.closer_to(p3, p2))
+    print('Expected:', p3)
+    print('Actual:  ', p3.closer_to(p3, p3))
+
+    print()
+    p4 = p1.clone()
+    p5 = p1.clone()
+    print('Expected:', p4)
+    print('Actual:  ', p1.closer_to(p4, p5))
+    print('Expected: True')
+    print('Actual:  ', p1.closer_to(p4, p5) is p4)
+    print('Expected: False')
+    print('Actual:  ', p1.closer_to(p4, p5) is p5)
 
 
 def run_test_halfway_to():
@@ -1019,13 +1119,40 @@ def run_test_halfway_to():
 
     """
     # ------------------------------------------------------------------
-    # TODO: 13.  Follow the same instructions as in TODO 3 above,
+    # DONE: 13.  Follow the same instructions as in DONE 3 above,
     #    but for the  halfway_to  method specified above.
     # ------------------------------------------------------------------
     print()
     print('-----------------------------------------------------------')
     print('Testing the   halfway_to   method of the Point class.')
     print('-----------------------------------------------------------')
+
+    p1 = Point(10, 20)
+    p2 = Point(30, 100)
+
+    print()
+    print('Should be: Point(20.0, 60.0)')
+    print('Actual is:', p1.halfway_to(p2))
+    print('Should be: Point(20.0, 60.0)')
+    print('Actual is:', p2.halfway_to(p1))
+
+    print()
+    print('Should be: Point(10.0, 20.0)')
+    print('Actual is:', p1.halfway_to(p1))
+
+    p3 = Point(-10, 20)
+    p4 = Point(30, -100)
+
+    print()
+    print('Should be: Point(10.0, -40.0)')
+    print('Actual is:', p3.halfway_to(p4))
+    print('Should be: Point(10.0, -40.0)')
+    print('Actual is:', p3.halfway_to(p4))
+
+    print()
+    print('Should be: Point(-10.0, 20.0)')
+    print('Actual is:', p3.halfway_to(p3))
+
 
 # class Point(object):
 #     """ Represents a 2D point in x y space. """
